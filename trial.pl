@@ -32,3 +32,17 @@ print "$str";
 
 #=================data type===================
 #$var @arr %map
+
+#=================array and dict===================
+@arr=(1,2,3);
+print "\$arr[0]=$arr[0]\n";
+
+%dict=('a',1,'b',2,'c',3);
+print "\$dict{'a'}=$dict{'a'}\n";
+
+@copy=@arr;
+$copy[0]=2;
+print "$copy[0] vs $arr[0]\n";
+
+$size=@arr;
+print "size of \@arr: $size\n";
