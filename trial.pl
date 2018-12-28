@@ -1,5 +1,6 @@
 #!/usr/bin/perl
 
+#=================syntax===================
 #Semicolon matter, compiled
 ;
 
@@ -29,3 +30,5 @@ EOF
 
 print "$str";
 
+#=================data type===================
+#$var @arr %map
