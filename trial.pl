@@ -300,4 +300,19 @@ LOOP:do {
 } while( $a < 20 );
 
 
+#=================ops===================
+$a=10;
+$b=10;
+$tmp=$a<=>$b;
+print "\$a<=>\$b: $tmp\n";
+#numerical compare are C style, e.g. <=
+#string use lt, gt, le, ge, eq, ne, cmp(compared to <=>)
+#numerical assignment and bitwise ops are C style
+#logical ops have both python like and C style, but no C style !
 
+$str1=q{abcd}; #same as 'abcd'
+$str2=qq{abcd}; #same as "abcd"
+$str3=qx{abcd}; #same as `abcd`	
+print $str1." ". $str2." ".$str3."\n";
+
+print ('-'x3)."\n";
