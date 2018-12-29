@@ -41,12 +41,14 @@ print "$str";
 #construct
 @arr=(1,2,3);
 @arr2=qw\1 2 3\;
+@arr22=qw(1 2 3);
 @arr3=qw\1
 2
 3\;
 
 print "\$arr[0]=$arr[0]\n";
 print "\$arr[-1]=$arr[-1]\n"; #like python
+print "\$arr2[0]=$arr2[0]\n";
 print "\$arr2[0]=$arr2[0]\n";
 print "\$arr3[0]=$arr3[0]\n";
 
@@ -84,6 +86,27 @@ splice(@arr4, 5, 2); # replace from 6-7 to null
 print "@arr4\n";
 splice(@arr4, 1, 2, 10..11); # replace from 2-3 to (10,11)
 print "@arr4\n";
+
+#str<=>arr, split join
+$str='a b c';
+@splitarr=split(' ', $str); # careful about the position of the delimiter
+print "$splitarr[1]\n";
+@splitarr=split(' ', $str, 2); # careful about the position of the delimiter
+print "$splitarr[1]\n";
+$joinedstr=join(' ', @splitarr); # careful about the position of the delimiter
+print "$joinedstr\n";
+
+#sort
+@arr=qw('b' 'a' 'c' 'D');
+@arr2=sort(@arr);
+print "@arr2\n";
+@arr2=sort { lc($a) cmp lc($b) } @arr ; # to lower case, careful $a instead of just a
+print "@arr2\n";
+
+#concat arr
+@arr3=(@arr,@arr2);
+print "@arr3\n";
+
 
 #=================dict===================
 %dict=('a',1,'b',2,'c',3);
