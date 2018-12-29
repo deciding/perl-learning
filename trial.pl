@@ -108,17 +108,36 @@ print "@arr2\n";
 print "@arr3\n";
 
 
-#=================dict===================
+#=================dict/map/hash===================
+#construction
 %dict=('a',1,'b',2,'c',3);
+%dict2=('a b'=>1, 'c' =>2, 'd'=>3);
+%dict3=(-ab=>1, -c =>2, -d=>3); # single word without space
 print "\$dict{'a'}=$dict{'a'}\n";
+print "\$dict2{'a b'}=$dict2{'a b'}\n";
+print "\$dict3{-ab}=$dict3{-ab}\n";
 
-#copy by value
-@copy=@arr;
-$copy[0]=2;
-print "$copy[0] vs $arr[0]\n";
+#slice
+print "\@dict{'a', 'b'}=@dict{'a', 'b'}\n"; # use @ instead of $ or %
 
-$size=@arr;
-print "size of \@arr: $size\n";
+#keys, values
+@keys=keys %dict;
+@values=values %dict;
+print "keys: @keys\n";
+print "values: @values\n";
+
+#existence
+$tf=exists($dict{'d'});
+print "whether d exist in dict: $tf\n";
+
+#size
+$size=keys %dict;
+print "size of dict: $size\n";
+
+#remove
+delete $dict{'a'};
+print "new dict : %dict\n"; # we didn't prepared how to print %, but prepared for $ and @
+print "new \$dict{'a'} : $dict{'a'}\n";
 
 #=================string===================
 $str='a' . 15;
