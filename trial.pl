@@ -315,4 +315,82 @@ $str2=qq{abcd}; #same as "abcd"
 $str3=qx{abcd}; #same as `abcd`	
 print $str1." ". $str2." ".$str3."\n";
 
-print ('-'x3)."\n";
+print ('-'x3);
+print "\n";
+
+#=================datetime===================
+@months = qw( Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec );
+@days = qw(Sun Mon Tue Wed Thu Fri Sat Sun);
+($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime();
+print "$hour:$min:$sec $mday $months[$mon] $year $days[$wday] $yday $isdst\n";#$year should +1900, isdst means is Daylight Saving Time
+$datestring = localtime();
+print "Local date and time $datestring\n";
+$datestring = gmtime();
+print "GMT date and time $datestring\n";#gmt time don't have DST, it is standard
+($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime();
+printf("Time Format - HH:MM:SS\n");
+printf("%02d:%02d:%02d\n", $hour, $min, $sec);
+$epoc = time();
+print "Number of seconds since Jan 1, 1970 - $epoc\n";
+$datestring = localtime($epoc);
+print "recovered date time from epoch: $datestring\n";
+use POSIX qw(strftime);
+$datestring = strftime "%a %b %e %H:%M:%S %Y", localtime;
+printf("date and time - $datestring\n");
+
+#=================subroutine/function===================
+#basic
+sub Hello{#careful, no ()
+    print "Hello world!\n";
+}
+Hello();
+#pass scalar
+sub Average {
+   # get total number of arguments passed.
+   $n = scalar(@_);#same as $n=@_
+   $sum = 0;
+
+   foreach $item (@_) {
+      $sum += $item;
+   }
+   $average = $sum / $n;
+
+   print "Average for the given numbers : $average\n";
+}
+Average(10, 20, 30);
+#pass list -- put list as the last argument, since list is expanded
+sub PrintList {
+   my $variable; # $variable is invisible outside somefunc()
+   my ($another, @an_array, %a_hash); # declaring many variables at once
+   my @list = @_; #my: new local, local: amend to old var, our: global and used in strict mode, use strict, use warning
+   print "Given list is @list\n";
+}
+$a = 10;
+@b = (1, 2, 3, 4);
+PrintList($a, @b);
+#pass hash
+sub PrintHash {
+   my (%hash) = @_;#params translated to arr of key/value pari
+
+   foreach my $key ( keys %hash ) {
+      my $value = $hash{$key};
+      print "$key : $value\n";
+   }
+}
+%hash = ('name' => 'Tom', 'age' => 19);
+PrintHash(%hash);
+#returning arr and hash are also expanded, thus we need references of them
+#my vs local vs state
+#state is private scope, but can save state accross function call
+use feature 'state';
+sub PrintCount {
+   state $count = 0; # initial value
+
+   print "Value of counter is $count\n";
+   $count++;
+}
+for (1..5) {
+   PrintCount();
+}
+#context of the function: what is th expected return value
+
