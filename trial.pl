@@ -358,7 +358,7 @@ sub Average {
    print "Average for the given numbers : $average\n";
 }
 Average(10, 20, 30);
-#pass list -- put list as the last argument, since list is expanded
+#pass list -- put list as the last argument, since list is expanded and combined with all other arguments
 sub PrintList {
    my $variable; # $variable is invisible outside somefunc()
    my ($another, @an_array, %a_hash); # declaring many variables at once
@@ -382,7 +382,17 @@ PrintHash(%hash);
 #returning arr and hash are also expanded, thus we need references of them
 #my vs local vs state
 #state is private scope, but can save state accross function call
-use feature 'state';
+{		#following are comparision
+   my $count = 0; # initial value
+   sub PrintCount {
+      print "Value of counter is $count\n";
+      $count++;
+   }
+}
+for (1..5) {
+   PrintCount();
+}
+use feature 'state';#following are actual
 sub PrintCount {
    state $count = 0; # initial value
 
@@ -393,4 +403,216 @@ for (1..5) {
    PrintCount();
 }
 #context of the function: what is th expected return value
+
+#=================references===================
+#$scalarref = \$foo;
+#$arrayref  = \@ARGV;
+#$hashref   = \%ENV;
+#$coderef   = \&handler;
+#$globref   = \*foo;
+
+#construct referece
+$arrayref = [1, 2, ['a', 'b', 'c']];#mind the [] anonymous hash format
+$hashref = {
+   'Adam'  => 'Eve',
+   'Clyde' => 'Bonnie',
+};#mind the {} anonymous hash format
+$coderef = sub { print "Boink!\n" };#mind the sub{} anonymous function, also mind the last sentence in bracket can without ;
+
+#dereferencing
+$var = 10;
+$r = \$var;
+print "Value of $var is : ", $$r, "\n";
+@var = (1, 2, 3);
+$r = \@var;
+print "Value of @var is : ",  @$r, "\n";
+%var = ('key1' => 10, 'key2' => 20);
+$r = \%var;
+print "Value of %var is : ", %$r, "\n";#note comma for print function, and the default printing routine for hash, is just like an array
+
+#reference type
+$var = 10;
+$r = \$var;
+print "Reference type in r : ", ref($r), "\n";
+@var = (1, 2, 3);
+$r = \@var;
+print "Reference type in r : ", ref($r), "\n";
+%var = ('key1' => 10, 'key2' => 20);
+$r = \%var;
+print "Reference type in r : ", ref($r), "\n";
+
+#circular references
+my $foo = 100;#following are comparision
+$bar = \$foo;
+print "Value of bar is : ", $bar, "\n";
+print "Value of bar is : ", $$bar, "\n";
+my $foo = 100;#following are actual
+$foo = \$foo;
+print "Value of foo is : ", $foo, "\n";
+print "Value of foo is : ", $$foo, "\n";
+print "Value of foo is : ", $$$foo, "\n";
+
+#reference functions
+sub PrintHash {
+   my (%hash) = @_;
+   foreach $item (%hash) {
+      print "Item : $item\n";
+   }
+}
+%hash = ('name' => 'Tom', 'age' => 19);
+
+$cref = \&PrintHash;
+&$cref(%hash);
+
+#=================format===================
+#@>>>> right-justified
+#@|||| centered
+#@####.## numeric field holder
+#@* multiline field holder
+format EMPLOYEE =
+===================================
+@<<<<<<<<<<<<<<<<<<<<<< @<< 
+$name $age
+@#####.##
+$salary
+===================================
+.
+format EMPLOYEE_TOP =
+===================================
+Name                    Age
+===================================
+.
+#select(STDOUT);#associate output file handler
+#$~ = EMPLOYEE;#associate format with the output file handler
+#$^ = EMPLOYEE_TOP;#header format
+@n = ("Ali", "Raza", "Jaffer");
+@a  = (20,30, 40);
+@s = (2000.00, 2500.00, 4000.000);
+$i = 0;
+foreach (@n) {
+   $name = $_;#simplified foreach
+   $age = $a[$i];
+   $salary = $s[$i++];
+#   write;
+}
+
+#pagination
+format EMPLOYEE_TOP =
+===================================
+Name                    Age Page @<
+                                 $%
+=================================== 
+.
+$==60;#number of lines per page
+
+#footer -- no auto methods as header, check $- each time, and print footer yourself
+format EMPLOYEE_BOTTOM =
+End of Page @<
+            $%
+.
+
+#=================file===================
+#special file handlers: STDIN, STDOUT, STDERR
+open(DATA, "<file.txt") or die "Couldn't open file file.txt, $!"; # create our own file handler, < means readonly
+while(<DATA>) {
+   print "$_";
+}
+#rwa,r+ w+ a+
+#< > >>, +< +> +>>
+sysopen(DATA, "file.txt", O_RDWR|O_TRUNC );
+
+#close
+close FILEHANDLE;
+#close; default is select() one, here is OUTPUT
+close(DATA) || die "Couldn't close file properly";
+
+#read from file
+print "What is your name?\n";
+$name = <STDIN>;
+print "Hello $name\n";
+open(DATA,"<file.txt") or die "Can't open data";
+@lines = <DATA>;
+close(DATA);
+
+#read single char -- is EOF, return undef
+#getc FILEHANDLE
+#getc
+
+#read bianry
+#read FILEHANDLE, SCALAR, LENGTH, OFFSET # from SCALAR+OFFSET read LENGTH, return num of bytes read
+#read FILEHANDLE, SCALAR, LENGTH 
+
+#write
+#print FILEHANDLE LIST
+#print LIST
+#print
+
+#copy
+#open(DATA1, "<file1.txt");
+#open(DATA2, ">file2.txt");
+#while(<DATA1>) {
+#   print DATA2 $_;
+#}
+#close( DATA1 );
+#close( DATA2 );
+
+#rename
+#rename ("/usr/test/file1.txt", "/usr/test/file2.txt" );
+
+#del
+#unlink ("/usr/test/file1.txt");
+
+#tel and seek
+#tell FILEHANDLE # return the current position
+#tell
+#seek FILEHANDLE, POSITION, WHENCE
+
+#file info
+#my $file = "/usr/test/file1.txt";
+#my (@description, $size);
+#if (-e $file) {
+#   push @description, 'binary' if (-B _);
+#   push @description, 'a socket' if (-S _);
+#   push @description, 'a text file' if (-T _);
+#   push @description, 'a block special file' if (-b _);
+#   push @description, 'a character special file' if (-c _);
+#   push @description, 'a directory' if (-d _);
+#   push @description, 'executable' if (-x _);
+#   push @description, (($size = -s _)) ? "$size bytes" : 'empty';
+#   print "$file is ", join(', ',@description),"\n";
+#}
+
+#=================directory===================
+#display
+$dir = "/tmp/* /home/*";
+@files = glob( $dir );
+foreach (@files ) {
+   print $_ . "\n";
+}
+opendir(DIR, '.') or die "Couldn't open directory, $!";
+foreach (sort grep(/^.*\.c$/,readdir(DIR))) {
+   print "$_\n";
+}
+closedir DIR;
+
+#create dir
+#$dir = "/tmp/perl";
+#mkdir( $dir ) or die "Couldn't create $dir directory, $!";
+#print "Directory created successfully\n";
+
+#remove dir
+#$dir = "/tmp/perl";
+#rmdir( $dir ) or die "Couldn't remove $dir directory, $!";
+#print "Directory removed successfully\n";
+
+#change dir
+#$dir = "/home";
+#chdir( $dir ) or die "Couldn't go inside $dir directory, $!";
+#print "Your new location is $dir\n";
+
+#=================error handling===================
+open(DATA, $file) || die "Error: Couldn't open the file $!";
+die "Error: Can't change directory!: $!" unless(chdir("/etc"));
+print(exists($hash{value}) ? 'There' : 'Missing',"\n");
+chdir('/etc') or warn "Can't change directory";
 
